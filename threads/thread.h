@@ -50,7 +50,8 @@
 // and the RS6000 needs to save 75 (!)
 // For simplicity, I just take the maximum over all architectures.
 
-#define MachineStateSize 75 
+#define MachineStateSize 75
+#define HighestPriority 149
 
 
 // Size of the thread's private execution stack.
@@ -107,6 +108,22 @@ class Thread {
     void Print() { cout << name; }
     void SelfTest();		// test whether thread impl is working
 
+    void SetPriority(int p);
+    int GetPriority();
+
+    void SetBurstTime(int t);
+    int GetBurstTime();
+
+    void SetExeTime(int t);
+    int GetExeTime();
+
+    void SetWaitTime(int t);
+    int GetWaitTime();
+
+    int Priority;
+    int WaitTime;
+    int BurstTime;
+    int ExeTime;
   private:
     // some of the private data for this class is listed above
     

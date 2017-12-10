@@ -33,6 +33,9 @@ Kernel::Kernel(int argc, char **argv)
     for (int i = 0; i < NumPhysPages; i++) {
         usedPhysicalPage[i] = FALSE;
     }
+    for (int i = 0; i < 10; i++) {
+        ThreadPriority[i] = 0;
+    }
 #ifndef FILESYS_STUB
     formatFlag = FALSE;
 #endif
@@ -55,7 +58,12 @@ Kernel::Kernel(int argc, char **argv)
 	    	ASSERT(i + 1 < argc);
 	    	consoleIn = argv[i + 1];
 	    	i++;
-		} else if (strcmp(argv[i], "-co") == 0) {
+		} else if (strcmp(argv[i], "-ep") == 0) {
+            execfile[++execfileNum] = argv[++i];
+            ThreadPriority[execfileNum] = atoi(argv[++i]);
+            cout << execfile[execfileNum] << "\n"
+                 << "Priority: " << ThreadPriority[execfileNum] << "\n";
+        } else if (strcmp(argv[i], "-co") == 0) {
 	    	ASSERT(i + 1 < argc);
 	    	consoleOut = argv[i + 1];
 	    	i++;
@@ -265,16 +273,22 @@ void Kernel::ExecAll()
 {
 
 	for (int i=1;i<=execfileNum;i++) {
-		int a = Exec(execfile[i]);
+		int a = Exec(execfile[i], ThreadPriority[i]);
 	}
 	currentThread->Finish();
     //Kernel::Exec();	
 }
 
 
-int Kernel::Exec(char* name)
+int Kernel::Exec(char* name, int priority)
 {
 	t[threadNum] = new Thread(name, threadNum);
+    t[threadNum]->SetBurstTime(0);
+    t[threadNum]->SetWaitTime(0);
+    t[threadNum]->SetExeTime(0);
+    t[threadNum]->SetPriority(priority);
+
+    
 	t[threadNum]->space = new AddrSpace(usedPhysicalPage);
 	t[threadNum]->Fork((VoidFunctionPtr) &ForkExecute, (void *)t[threadNum]);
 	threadNum++;

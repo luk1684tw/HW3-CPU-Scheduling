@@ -37,7 +37,7 @@ class Kernel {
 				// from constructor because 
 				// refers to "kernel" as a global
 	void ExecAll();
-	int Exec(char* name);
+	int Exec(char* name, int priority);
     void ThreadSelfTest();	// self test of threads and synchronization
 	
     void ConsoleTest();         // interactive console self test
@@ -69,6 +69,7 @@ class Kernel {
 
     int hostName;               // machine identifier
     bool  usedPhysicalPage[NumPhysPages];
+    int ThreadPriority[10];
   private:
 
 	Thread* t[10];

@@ -433,3 +433,43 @@ Thread::SelfTest()
     kernel->currentThread->Yield();
     SimpleThread(0);
 }
+
+void Thread::SetBurstTime(int t)
+{
+    BurstTime = t;
+}
+
+void Thread::SetExeTime(int t)
+{
+    ExeTime = t;
+}
+
+void Thread::SetWaitTime(int t)
+{
+    WaitTime = t;
+}
+
+void Thread::SetPriority(int p)
+{
+    Priority = p;
+}
+
+int Thread::GetBurstTime()
+{
+    return BurstTime;
+}
+
+int Thread::GetWaitTime()
+{
+    return WaitTime;
+}
+
+int Thread::GetPriority()
+{
+    return Priority;
+}
+
+int Thread::GetExeTime()
+{
+    return ExeTime;
+}
