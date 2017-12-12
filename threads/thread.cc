@@ -41,6 +41,7 @@ Thread::Thread(char* threadName, int threadID)
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
+    this->Tick_when_start_running = 0;
     for (int i = 0; i < MachineStateSize; i++) {
 	machineState[i] = NULL;		// not strictly necessary, since
 					// new thread ignores contents 
@@ -212,7 +213,7 @@ Thread::Yield ()
     nextThread = kernel->scheduler->FindNextToRun();
     if (nextThread != NULL) 
     {
-        kernel->ReadyToRun(this);
+        kernel->ReadyToRun(this);                   //put this thread back to ready queue
         int exeTime = this->GetExeTime();
 	    kernel->scheduler->ReadyToRun(this);
 
@@ -220,7 +221,10 @@ Thread::Yield ()
              << "] is now selected for execution\n"
              << "Tick[" << stats->totalTicks << "]: Thread[" << this->getID()
              << "] is replaced, and it has executed [" << exeTime <<"] ticks\n";
-              
+        
+        this->SetBurstTime(0.5*exeTime + 0.5*this->GetBurstTime());
+        this->SetExeTime(0);                //
+
 	    kernel->scheduler->Run(nextThread, FALSE);
     }
     (void) kernel->interrupt->SetLevel(oldLevel);
@@ -460,19 +464,19 @@ Thread::SelfTest()
 
 void Thread::SetBurstTime(int t)
 {
-    BurstTime = t;
+    this->BurstTime = t;
     return;
 }
 
 void Thread::SetExeTime(int t)
 {
-    ExeTime = t;
+    this->ExeTime = t;
     return;
 }
 
 void Thread::SetWaitTime(int t)
 {
-    WaitTime = t;
+    this->WaitTime = t;
     return;
 }
 
@@ -482,25 +486,26 @@ void Thread::SetPriority(int p)
         Priority = HighestPriority;
     else
         Priority = p;
+
     return;
 }
 
 int Thread::GetBurstTime()
 {
-    return BurstTime;
+    return this->BurstTime;
 }
 
 int Thread::GetWaitTime()
 {
-    return WaitTime;
+    return this->WaitTime;
 }
 
 int Thread::GetPriority()
 {
-    return Priority;
+    return this->Priority;
 }
 
 int Thread::GetExeTime()
 {
-    return ExeTime;
+    return this->ExeTime;
 }
