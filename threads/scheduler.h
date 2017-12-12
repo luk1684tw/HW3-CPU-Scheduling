@@ -13,6 +13,9 @@
 #include "list.h"
 #include "thread.h"
 
+#define PeriodToAging 1500
+#define Aging 10 
+
 // The following class defines the scheduler/dispatcher abstraction -- 
 // the data structures and operations needed to keep track of which 
 // thread is running, and which threads are ready but not running.
@@ -39,6 +42,9 @@ class Scheduler {
 				// but not running
     Thread *toBeDestroyed;	// finishing thread to be destroyed
     				// by the next thread that runs
+    SortedList<Thread *> *L1queue;
+    SortedList<Thread *> *L2queue;
+    List<Thread *> *L3queue;        
 };
 
 #endif // SCHEDULER_H
