@@ -210,7 +210,9 @@ Thread::Yield ()
     DEBUG(dbgThread, "Yielding thread: " << name);
     
     nextThread = kernel->scheduler->FindNextToRun();
-    if (nextThread != NULL) {
+    if (nextThread != NULL) 
+    {
+        kernel->ReadyToRun(this);
         int exeTime = this->GetExeTime();
 	    kernel->scheduler->ReadyToRun(this);
 
@@ -260,6 +262,19 @@ Thread::Sleep (bool finishing)
 		kernel->interrupt->Idle();	// no one to run, wait for an interrupt
 	}    
     // returns when it's time for us to run
+
+    int prev_burstTime = this-GetBurstTime();
+    Statistics *stats = kernel->stats;
+    this->SetBurstTime(0.5*prev_burstTime + 0.5*this->GetExeTime());    // burstTime setup
+
+
+    // printing information
+    cout << "Tick:[" << stats->totalTicks << "]: Thread[" << nextThread->getID() 
+         << "] is now selected for execution\n"
+         << "Tick:[" << stats->totalTicks << "]: Thread[" << this->getID() 
+         << "] is replaced and it has executed [" << this->GetExeTime() << "] ticks\n";
+
+    this->SetExeTime(0);
     kernel->scheduler->Run(nextThread, finishing); 
 }
 
@@ -446,21 +461,28 @@ Thread::SelfTest()
 void Thread::SetBurstTime(int t)
 {
     BurstTime = t;
+    return;
 }
 
 void Thread::SetExeTime(int t)
 {
     ExeTime = t;
+    return;
 }
 
 void Thread::SetWaitTime(int t)
 {
     WaitTime = t;
+    return;
 }
 
 void Thread::SetPriority(int p)
 {
-    Priority = p;
+    if (p >= HighestPriority)
+        Priority = HighestPriority;
+    else
+        Priority = p;
+    return;
 }
 
 int Thread::GetBurstTime()

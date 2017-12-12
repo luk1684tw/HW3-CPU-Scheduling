@@ -120,10 +120,11 @@ class Thread {
     void SetWaitTime(int t);
     int GetWaitTime();
 
-    int Priority;
-    int WaitTime;
-    int BurstTime;
-    int ExeTime;
+    int Priority;               // priority
+    int WaitTime;               // time wainting in ready queue
+    int BurstTime;              // next expect executtion time
+    int ExeTime;                // processed time in CPU
+
   private:
     // some of the private data for this class is listed above
     
