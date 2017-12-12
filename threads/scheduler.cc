@@ -23,6 +23,28 @@
 #include "scheduler.h"
 #include "main.h"
 
+static int
+LOneCompare (Thread* x,Thread *y){
+    if(x->GetBurstTime() > y->GetBurstTime()) return 1;
+    else if(x->GetBurstTime() < y->GetBurstTime()) return -1;
+    else{
+        if(x->getID() < y->getID()) return -1;
+        else return 1; 
+    }
+    return 0;
+}
+
+static int
+LTwoCompare (Thread* x,Thread *y){
+    if(x->GetPriority() > y->GetPriority()) return -1;
+    else if(x->GetPriority() < y->GetPriority()) return 1;
+    else{
+        if(x->getID() < y->getID()) return -1;
+        else return 1;
+    }
+    return 0; 
+} 
+
 //----------------------------------------------------------------------
 // Scheduler::Scheduler
 // 	Initialize the list of ready but not running threads.
@@ -31,7 +53,10 @@
 
 Scheduler::Scheduler()
 { 
-    readyList = new List<Thread *>; 
+    //readyList = new List<Thread *>;
+    L1queue = new SortedList<Thread *>(LOneCompare);
+    L2queue = new SortedList<Thread *>(LTwoCompare);
+    L3queue = new List<Thread *>;  
     toBeDestroyed = NULL;
 } 
 
@@ -42,7 +67,10 @@ Scheduler::Scheduler()
 
 Scheduler::~Scheduler()
 { 
-    delete readyList; 
+    //delete readyList;
+    delete L1queue;
+    delete L2queue;
+    delete L3queue; 
 } 
 
 //----------------------------------------------------------------------
