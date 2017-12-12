@@ -21,6 +21,7 @@
 #include "switch.h"
 #include "synch.h"
 #include "sysdep.h"
+#include "stats.h"
 
 // this is put at the top of the execution stack, for detecting stack overflows
 const int STACK_FENCEPOST = 0xdedbeef;
@@ -201,6 +202,7 @@ void
 Thread::Yield ()
 {
     Thread *nextThread;
+    Statistics *stats = kernel->stats;
     IntStatus oldLevel = kernel->interrupt->SetLevel(IntOff);
     
     ASSERT(this == kernel->currentThread);
@@ -209,8 +211,15 @@ Thread::Yield ()
     
     nextThread = kernel->scheduler->FindNextToRun();
     if (nextThread != NULL) {
-	kernel->scheduler->ReadyToRun(this);
-	kernel->scheduler->Run(nextThread, FALSE);
+        int exeTime = this->GetExeTime();
+	    kernel->scheduler->ReadyToRun(this);
+
+        cout << "Tick[" << stats->totalTicks << "]: Thread[" << nextThread->getID() 
+             << "] is now selected for execution\n"
+             << "Tick[" << stats->totalTicks << "]: Thread[" << this->getID()
+             << "] is replaced, and it has executed [" << exeTime <<"] ticks\n";
+              
+	    kernel->scheduler->Run(nextThread, FALSE);
     }
     (void) kernel->interrupt->SetLevel(oldLevel);
 }
