@@ -35,6 +35,9 @@ class Scheduler {
     				// running needs to be deleted
     void Print();		// Print contents of ready list
     
+    //static int LOneCompare (Thread* x,Thread *y);
+    //static int LTwoCompare (Thread* x,Thread *y);
+    void IncreaseWaitTime();
     // SelfTest for scheduler is implemented in class Thread
     
   private:

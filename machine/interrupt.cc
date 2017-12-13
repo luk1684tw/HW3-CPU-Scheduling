@@ -23,6 +23,7 @@
 #include "copyright.h"
 #include "interrupt.h"
 #include "main.h"
+#include "scheduler.h"
 
 // String definitions for debugging messages
 
@@ -153,10 +154,10 @@ Interrupt::OneTick()
 // advance simulated time
     if (status == SystemMode) {
         stats->totalTicks += SystemTick;
-	stats->systemTicks += SystemTick;
+	    stats->systemTicks += SystemTick;
     } else {
-	stats->totalTicks += UserTick;
-	stats->userTicks += UserTick;
+	    stats->totalTicks += UserTick;
+	    stats->userTicks += UserTick;
     }
     DEBUG(dbgInt, "== Tick " << stats->totalTicks << " ==");
 
@@ -165,6 +166,16 @@ Interrupt::OneTick()
 				// (interrupt handlers run with
 				// interrupts disabled)
     CheckIfDue(FALSE);		// check for pending interrupts
+
+    Scheduler *schedule  = kernel->scheduler;              
+    schedule->IncreaseWaitTime();
+    kernel->currentThread->SetExeTime(kernel->currentThread->GetExeTime()+1);               
+
+    cout << "Current running Thread:" << kernel->currentThread->getID()
+         << " , Thread Priority: " << kernel->currentThread->GetPriority()
+         << " Thread burstTime: " << kernel->currentThread->GetBurstTime() 
+         << "Total ticks: " << kernel->stats->totalTicks << endl;
+    
     ChangeLevel(IntOff, IntOn);	// re-enable interrupts
     if (yieldOnReturn) {	// if the timer device handler asked 
     				// for a context switch, ok to do it now

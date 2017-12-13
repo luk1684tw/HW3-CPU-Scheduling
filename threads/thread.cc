@@ -41,7 +41,6 @@ Thread::Thread(char* threadName, int threadID)
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
-    this->Tick_when_start_running = 0;
     for (int i = 0; i < MachineStateSize; i++) {
 	machineState[i] = NULL;		// not strictly necessary, since
 					// new thread ignores contents 
@@ -209,22 +208,20 @@ Thread::Yield ()
     ASSERT(this == kernel->currentThread);
     
     DEBUG(dbgThread, "Yielding thread: " << name);
+
     
     nextThread = kernel->scheduler->FindNextToRun();
+	cout<<"in yield\n";
     if (nextThread != NULL) 
     {
-        kernel->ReadyToRun(this);                   //put this thread back to ready queue
-        int exeTime = this->GetExeTime();
-	    kernel->scheduler->ReadyToRun(this);
-
+		
         cout << "Tick[" << stats->totalTicks << "]: Thread[" << nextThread->getID() 
              << "] is now selected for execution\n"
              << "Tick[" << stats->totalTicks << "]: Thread[" << this->getID()
-             << "] is replaced, and it has executed [" << exeTime <<"] ticks\n";
+             << "] is replaced, and it has executed [" << this->GetExeTime() <<"] ticks\n";
         
-        this->SetBurstTime(0.5*exeTime + 0.5*this->GetBurstTime());
-        this->SetExeTime(0);                //
-
+        this->SetExeTime(0);
+        
 	    kernel->scheduler->Run(nextThread, FALSE);
     }
     (void) kernel->interrupt->SetLevel(oldLevel);
@@ -266,16 +263,16 @@ Thread::Sleep (bool finishing)
 		kernel->interrupt->Idle();	// no one to run, wait for an interrupt
 	}    
     // returns when it's time for us to run
-
-    int prev_burstTime = this-GetBurstTime();
+	cout<<"in sleep\n";
+    int prev_burstTime = this->GetBurstTime();
     Statistics *stats = kernel->stats;
     this->SetBurstTime(0.5*prev_burstTime + 0.5*this->GetExeTime());    // burstTime setup
 
 
     // printing information
-    cout << "Tick:[" << stats->totalTicks << "]: Thread[" << nextThread->getID() 
+    cout << "Tick[" << stats->totalTicks << "]: Thread[" << nextThread->getID() 
          << "] is now selected for execution\n"
-         << "Tick:[" << stats->totalTicks << "]: Thread[" << this->getID() 
+         << "Tick[" << stats->totalTicks << "]: Thread[" << this->getID() 
          << "] is replaced and it has executed [" << this->GetExeTime() << "] ticks\n";
 
     this->SetExeTime(0);
