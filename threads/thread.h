@@ -42,6 +42,7 @@
 #include "sysdep.h"
 #include "machine.h"
 #include "addrspace.h"
+#include "list.h"
 
 // CPU register state to be saved on context switch.  
 // The x86 needs to save only a few registers, 

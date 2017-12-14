@@ -65,7 +65,7 @@ Thread::Thread(char* threadName, int threadID)
 Thread::~Thread()
 {
     DEBUG(dbgThread, "Deleting thread: " << name);
-    cout << "In destructor , currentThread: " << kernel->currentThread->getID() << endl; 
+    cout << "In destructor destroying " << this->getID() << " , currentThread: " << kernel->currentThread->getID() << endl; 
     ASSERT(this != kernel->currentThread);
     if (stack != NULL)
 	DeallocBoundedArray((char *) stack, StackSize * sizeof(int));
@@ -211,14 +211,22 @@ Thread::Yield ()
     ASSERT(this == kernel->currentThread);
     
     DEBUG(dbgThread, "Yielding thread: " << name);
-  
-    if (this->GetPriority() < 100)
-        kernel->scheduler->ReadyToRun(this);
     
+    if (!kernel->scheduler->L1queue->IsInList(this) && !kernel->scheduler->L2queue->IsInList(this)
+        && !kernel->scheduler->L3queue->IsInList(this) && this-> getID() > 1)
+        kernel->scheduler->ReadyToRun(this);
+        
     nextThread = kernel->scheduler->FindNextToRun();
 
     if (nextThread != NULL) 
     {
+        int exeTime = kernel->currentThread->GetExeTime();
+        int burst = kernel->currentThread->GetBurstTime();
+        int estimate = 0.5*exeTime + 0.5*burst;
+        kernel->currentThread->SetBurstTime(estimate);
+
+        cout << "Tick[" << kernel->stats->totalTicks << "]: Thread[" << kernel->currentThread->getID() 
+             << "] has changed its burstTime to " << estimate << " Ticks\n";
 		
         cout << "Tick[" << stats->totalTicks << "]: Thread[" << nextThread->getID() 
              << "] is now selected for execution\n"

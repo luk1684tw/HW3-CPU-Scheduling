@@ -96,18 +96,14 @@ Scheduler::ReadyToRun (Thread *thread)
 	cout << "Thread " << thread->getID() <<" Ready To Run\n";
 
     if(thread->GetPriority() >= 100 && thread->GetPriority() <= 150){
-        cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<thread->getID()<<"] is insert into queue L[1]\n";
-        L1queue->Insert(thread);
-        kernel->currentThread->setStatus(READY);
-        int exeTime = kernel->currentThread->GetExeTime();
-        int burst = kernel->currentThread->GetBurstTime();
-        int estimate = 0.5*exeTime + 0.5*burst;
-        kernel->currentThread->SetBurstTime(estimate);
-        
-        L1queue->Insert(kernel->currentThread);
-        cout << "Tick[" << kernel->stats->totalTicks << "]: Thread[" << kernel->currentThread->getID() 
-             << "] has changed its burstTime to " << estimate << " Ticks\n";
+        if (!kernel->scheduler->L1queue->IsInList(thread))
+        {
+            cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<thread->getID()<<"] is insert into queue L[1]\n";
+            L1queue->Insert(thread);
+        }
+            
         kernel->currentThread->Yield();
+
     }//put to L2 queue
     else if(thread->GetPriority() >= 50 && thread->GetPriority() <= 99){
         cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<thread->getID()<<"] is insert into queue L[2]\n";
@@ -149,7 +145,7 @@ Scheduler::FindNextToRun ()
     }
     else
     {
-        cout << "No Threads In Ready Queue!!\n";
+        // cout << "No Threads In Ready Queue!!\n";
         return NULL;
     }
 
@@ -265,7 +261,7 @@ Scheduler::IncreaseWaitTime()
     int oldpriority;
 	//cout<<"In IncreaseWaitTime\n";
     //L1
-    /*for(;!iter1->IsDone();iter1->Next()){
+    for(;!iter1->IsDone();iter1->Next()){
         iter1->Item()->SetWaitTime(iter1->Item()->GetWaitTime()+1);
         if(iter1->Item()->GetWaitTime() >= PeriodToAging){
             oldpriority = iter1->Item()->GetPriority();
@@ -277,7 +273,7 @@ Scheduler::IncreaseWaitTime()
             cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<iter1->Item()->getID()<<"] is remove from queue L[1]\n";
             ReadyToRun(iter1->Item());
         }
-    }*/
+    }
     //L2
     for(;!iter2->IsDone();iter2->Next()){
         iter2->Item()->SetWaitTime(iter2->Item()->GetWaitTime()+1);
@@ -295,7 +291,7 @@ Scheduler::IncreaseWaitTime()
     //L3
     for(;!iter3->IsDone();iter3->Next()){
         iter3->Item()->SetWaitTime(iter3->Item()->GetWaitTime()+1);
-        if(iter3->Item()->GetWaitTime() >= PeriodToAging){
+        if(iter3->Item()->GetWaitTime() >= PeriodToAging && iter3->Item()->getID() > 1){
             oldpriority = iter3->Item()->GetPriority();
 			cout<<"***********************************"<<oldpriority<<"******************************"<<"L3"<<"\n";
             iter3->Item()->SetPriority(oldpriority+Aging);

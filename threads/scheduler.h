@@ -39,15 +39,15 @@ class Scheduler {
     //static int LTwoCompare (Thread* x,Thread *y);
     void IncreaseWaitTime();
     // SelfTest for scheduler is implemented in class Thread
-    
+    SortedList<Thread *> *L1queue;
+    SortedList<Thread *> *L2queue;
+    List<Thread *> *L3queue;      
   private:
     List<Thread *> *readyList;  // queue of threads that are ready to run,
 				// but not running
     Thread *toBeDestroyed;	// finishing thread to be destroyed
     				// by the next thread that runs
-    SortedList<Thread *> *L1queue;
-    SortedList<Thread *> *L2queue;
-    List<Thread *> *L3queue;        
+      
 };
 
 #endif // SCHEDULER_H
