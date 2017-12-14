@@ -36,6 +36,7 @@ const int STACK_FENCEPOST = 0xdedbeef;
 
 Thread::Thread(char* threadName, int threadID)
 {
+    cout << "Thread " << threadID << " created\n"; 
 	ID = threadID;
     name = threadName;
     stackTop = NULL;
@@ -64,6 +65,7 @@ Thread::Thread(char* threadName, int threadID)
 Thread::~Thread()
 {
     DEBUG(dbgThread, "Deleting thread: " << name);
+    cout << "In destructor , currentThread: " << kernel->currentThread->getID() << endl; 
     ASSERT(this != kernel->currentThread);
     if (stack != NULL)
 	DeallocBoundedArray((char *) stack, StackSize * sizeof(int));
@@ -201,6 +203,7 @@ Thread::Finish ()
 void
 Thread::Yield ()
 {
+    cout << "Thread " << this->getID() << " yield\n";
     Thread *nextThread;
     Statistics *stats = kernel->stats;
     IntStatus oldLevel = kernel->interrupt->SetLevel(IntOff);
@@ -208,10 +211,12 @@ Thread::Yield ()
     ASSERT(this == kernel->currentThread);
     
     DEBUG(dbgThread, "Yielding thread: " << name);
-
+  
+    if (this->GetPriority() < 100)
+        kernel->scheduler->ReadyToRun(this);
     
     nextThread = kernel->scheduler->FindNextToRun();
-	cout<<"in yield\n";
+
     if (nextThread != NULL) 
     {
 		
@@ -263,7 +268,7 @@ Thread::Sleep (bool finishing)
 		kernel->interrupt->Idle();	// no one to run, wait for an interrupt
 	}    
     // returns when it's time for us to run
-	cout<<"in sleep\n";
+	cout << "Thread " << this->getID() << " Sleep\n";
     int prev_burstTime = this->GetBurstTime();
     Statistics *stats = kernel->stats;
     this->SetBurstTime(0.5*prev_burstTime + 0.5*this->GetExeTime());    // burstTime setup

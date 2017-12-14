@@ -174,7 +174,8 @@ Interrupt::OneTick()
     cout << "Current running Thread:" << kernel->currentThread->getID()
          << " , Thread Priority: " << kernel->currentThread->GetPriority()
          << " Thread burstTime: " << kernel->currentThread->GetBurstTime() 
-         << "Total ticks: " << kernel->stats->totalTicks << endl;
+         << " Total ticks: " << kernel->stats->totalTicks
+         << " Exetime: " << kernel->currentThread->GetExeTime() << endl;
     
     ChangeLevel(IntOff, IntOn);	// re-enable interrupts
     if (yieldOnReturn) {	// if the timer device handler asked 

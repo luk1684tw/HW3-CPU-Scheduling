@@ -282,6 +282,7 @@ void Kernel::ExecAll()
 
 int Kernel::Exec(char* name, int priority)
 {
+    threadNum++;
 	t[threadNum] = new Thread(name, threadNum);
     t[threadNum]->SetBurstTime(0);
     t[threadNum]->SetWaitTime(0);
@@ -291,7 +292,6 @@ int Kernel::Exec(char* name, int priority)
     
 	t[threadNum]->space = new AddrSpace(usedPhysicalPage);
 	t[threadNum]->Fork((VoidFunctionPtr) &ForkExecute, (void *)t[threadNum]);
-	threadNum++;
 
 	return threadNum-1;
 /*

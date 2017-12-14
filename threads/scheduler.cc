@@ -94,6 +94,7 @@ Scheduler::ReadyToRun (Thread *thread)
     //put to L1 queue
 	//cout<<"ThreadPriority:"<<thread->GetPriority()<<"\n";
 	cout << "Thread " << thread->getID() <<" Ready To Run\n";
+
     if(thread->GetPriority() >= 100 && thread->GetPriority() <= 150){
         cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<thread->getID()<<"] is insert into queue L[1]\n";
         L1queue->Insert(thread);
@@ -135,18 +136,22 @@ Scheduler::FindNextToRun ()
     Statistics *stats = kernel->stats;
 
     if(!L1queue->IsEmpty()){
-        cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<L1queue->Front()->getID()<<"] is remove from queue L[1]\n";
+        cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<L1queue->Front()->getID()<<"] is removed from queue L[1]\n";
         return L1queue->RemoveFront();
     }
     else if(!L2queue->IsEmpty()){
-        cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<L2queue->Front()->getID()<<"] is remove from queue L[2]\n";
+        cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<L2queue->Front()->getID()<<"] is removed from queue L[2]\n";
         return L2queue->RemoveFront();
     }
     else if(!L3queue->IsEmpty()){
-        cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<L3queue->Front()->getID()<<"] is remove from queue L[3]\n";
+        cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<L3queue->Front()->getID()<<"] is removed from queue L[3]\n";
         return L3queue->RemoveFront();
     }
-    else return NULL;
+    else
+    {
+        cout << "No Threads In Ready Queue!!\n";
+        return NULL;
+    }
 
     /*if (readyList->IsEmpty()) {
 		return NULL;
@@ -283,7 +288,7 @@ Scheduler::IncreaseWaitTime()
             cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<iter2->Item()->getID()<<"] changes its priority from ["<<
             oldpriority<<"] to ["<<iter2->Item()->GetPriority()<<"]\n";
             L2queue->Remove(iter2->Item());
-            cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<iter2->Item()->getID()<<"] is remove from queue L[2]\n";
+            cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<iter2->Item()->getID()<<"] is removed from queue L[2]\n";
             ReadyToRun(iter2->Item());
         }
     }    
@@ -297,7 +302,7 @@ Scheduler::IncreaseWaitTime()
             cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<iter3->Item()->getID()<<"] changes its priority from ["<<
             oldpriority<<"] to ["<<iter3->Item()->GetPriority()<<"]\n";
             L3queue->Remove(iter3->Item());
-            cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<iter3->Item()->getID()<<"] is remove from queue L[3]\n";
+            cout<<"Tick["<<stats->totalTicks<<"]: Thread["<<iter3->Item()->getID()<<"] is removed from queue L[3]\n";
             ReadyToRun(iter3->Item());
         }
     } 

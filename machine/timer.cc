@@ -70,10 +70,14 @@ void
 Timer::SetInterrupt() 
 {
     if (!disable) {
-       int delay = TimerTicks;
-    
-       if (randomize) {
-	     delay = 1 + (RandomNumber() % (TimerTicks * 2));
+        int delay;
+        Thread* t = kernel->currentThread;
+        if (t->GetExeTime() < 100 && t->GetPriority() < 50)
+            delay = TimerTicks - t->GetExeTime(); 
+        else   
+            delay = TimerTicks;
+        if (randomize) {
+	        delay = 1 + (RandomNumber() % (TimerTicks * 2));
         }
        // schedule the next timer device interrupt
        kernel->interrupt->Schedule(this, delay, TimerInt);
