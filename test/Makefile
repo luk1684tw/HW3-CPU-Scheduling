@@ -113,7 +113,7 @@ PROGRAMS = unknownhost
 else
 # change this if you create a new test program!
 #PROGRAMS = add halt shell matmult sort segments test1 test2 a
-PROGRAMS = add halt consoleIO_test1 consoleIO_test2 fileIO_test1 fileIO_test2
+PROGRAMS = add halt consoleIO_test1 consoleIO_test2 fileIO_test1 fileIO_test2 consoleIO_test3 consoleIO_test4 consoleIO_test5 consoleIO_test6
 endif
 
 all: $(PROGRAMS)
@@ -169,6 +169,30 @@ consoleIO_test2.o: consoleIO_test2.c
 consoleIO_test2: consoleIO_test2.o start.o
 	$(LD) $(LDFLAGS) start.o consoleIO_test2.o -o consoleIO_test2.coff
 	$(COFF2NOFF) consoleIO_test2.coff consoleIO_test2
+
+consoleIO_test3.o: consoleIO_test3.c
+	$(CC) $(CFLAGS) -c consoleIO_test3.c
+consoleIO_test3: consoleIO_test3.o start.o
+	$(LD) $(LDFLAGS) start.o consoleIO_test3.o -o consoleIO_test3.coff
+	$(COFF2NOFF) consoleIO_test3.coff consoleIO_test3
+
+consoleIO_test4.o: consoleIO_test4.c
+	$(CC) $(CFLAGS) -c consoleIO_test4.c
+consoleIO_test4: consoleIO_test4.o start.o
+	$(LD) $(LDFLAGS) start.o consoleIO_test4.o -o consoleIO_test4.coff
+	$(COFF2NOFF) consoleIO_test4.coff consoleIO_test4
+
+consoleIO_test5.o: consoleIO_test5.c
+	$(CC) $(CFLAGS) -c consoleIO_test5.c
+consoleIO_test5: consoleIO_test5.o start.o
+	$(LD) $(LDFLAGS) start.o consoleIO_test5.o -o consoleIO_test5.coff
+	$(COFF2NOFF) consoleIO_test5.coff consoleIO_test5
+
+consoleIO_test6.o: consoleIO_test6.c
+	$(CC) $(CFLAGS) -c consoleIO_test6.c
+consoleIO_test6: consoleIO_test6.o start.o
+	$(LD) $(LDFLAGS) start.o consoleIO_test6.o -o consoleIO_test6.coff
+	$(COFF2NOFF) consoleIO_test6.coff consoleIO_test6
 	
 fileIO_test1.o: fileIO_test1.c
 	$(CC) $(CFLAGS) -c fileIO_test1.c
@@ -189,7 +213,7 @@ clean:
 	$(RM) -f *.coff
 
 distclean: clean
-	$(RM) -f $(PROGRAMS)
+	
 
 unknownhost:
 	@echo Host type could not be determined.

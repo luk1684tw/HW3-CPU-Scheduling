@@ -73,7 +73,7 @@ Timer::SetInterrupt()
         int delay;
         Thread* t = kernel->currentThread;
         if (t->GetExeTime() < 100 && t->GetPriority() < 50)
-            delay = TimerTicks - t->GetExeTime()-1; 
+            delay = TimerTicks - t->GetExeTime(); 
         else   
             delay = TimerTicks;
         if (randomize) {

@@ -169,13 +169,14 @@ Interrupt::OneTick()
 
     Scheduler *schedule  = kernel->scheduler;              
     schedule->IncreaseWaitTime();
-    kernel->currentThread->SetExeTime(kernel->currentThread->GetExeTime()+1);               
-
     cout << "Current running Thread:" << kernel->currentThread->getID()
          << " , Thread Priority: " << kernel->currentThread->GetPriority()
          << " Thread burstTime: " << kernel->currentThread->GetBurstTime() 
          << " Total ticks: " << kernel->stats->totalTicks
          << " Exetime: " << kernel->currentThread->GetExeTime() << endl;
+    kernel->currentThread->SetExeTime(kernel->currentThread->GetExeTime()+1);               
+
+    
     
     ChangeLevel(IntOff, IntOn);	// re-enable interrupts
     if (yieldOnReturn) {	// if the timer device handler asked 
