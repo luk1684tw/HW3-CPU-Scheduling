@@ -124,6 +124,7 @@ class Thread {
     int WaitTime;               // time wainting in ready queue
     int BurstTime;              // next expect executtion time
     int ExeTime;                // processed time in CPU
+    int L3time;
 
   private:
     // some of the private data for this class is listed above

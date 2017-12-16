@@ -61,8 +61,8 @@ Kernel::Kernel(int argc, char **argv)
 		} else if (strcmp(argv[i], "-ep") == 0) {
             execfile[++execfileNum] = argv[++i];
             ThreadPriority[execfileNum] = atoi(argv[++i]);
-            cout << execfile[execfileNum] << "\n"
-                 << "Priority: " << ThreadPriority[execfileNum] << "\n";
+            // cout << execfile[execfileNum] << "\n"
+            //      << "Priority: " << ThreadPriority[execfileNum] << "\n";
         } else if (strcmp(argv[i], "-co") == 0) {
 	    	ASSERT(i + 1 < argc);
 	    	consoleOut = argv[i + 1];

@@ -69,11 +69,11 @@ class Kernel {
 
     int hostName;               // machine identifier
     bool  usedPhysicalPage[NumPhysPages];
-    int ThreadPriority[10];
+    int ThreadPriority[20];
   private:
 
-	Thread* t[10];
-	char*   execfile[10];
+	Thread* t[20];
+	char*   execfile[20];
 	int execfileNum;
 	int threadNum;
     bool randomSlice;		// enable pseudo-random time slicing

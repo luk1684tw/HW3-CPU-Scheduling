@@ -72,14 +72,15 @@ Timer::SetInterrupt()
     if (!disable) {
         int delay;
         Thread* t = kernel->currentThread;
-        if (t->GetExeTime() < 100 && t->GetPriority() < 50)
-            delay = TimerTicks - t->GetExeTime(); 
+        if (t->L3time < 99 && t->GetPriority() < 50)
+            delay = TimerTicks - t->L3time - 1; 
         else   
             delay = TimerTicks;
         if (randomize) {
 	        delay = 1 + (RandomNumber() % (TimerTicks * 2));
         }
        // schedule the next timer device interrupt
+    //    cout << "Next delay: " << delay << " L3Time: " << t->L3time << endl;
        kernel->interrupt->Schedule(this, delay, TimerInt);
     }
 }

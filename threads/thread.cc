@@ -36,9 +36,10 @@ const int STACK_FENCEPOST = 0xdedbeef;
 
 Thread::Thread(char* threadName, int threadID)
 {
-    cout << "Thread " << threadID << " created\n"; 
+    // cout << "Thread " << threadID << " created\n"; 
 	ID = threadID;
     name = threadName;
+    L3time = 0;
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
@@ -203,7 +204,7 @@ Thread::Finish ()
 void
 Thread::Yield ()
 {
-    cout << "Thread " << this->getID() << " yield\n";
+    // cout << "Thread " << this->getID() << " yield\n";
     Thread *nextThread;
     Statistics *stats = kernel->stats;
     IntStatus oldLevel = kernel->interrupt->SetLevel(IntOff);
@@ -216,17 +217,17 @@ Thread::Yield ()
     // if (!(kernel->scheduler->L1queue->IsInList(this)) && !(kernel->scheduler->L2queue->IsInList(this))
     // && !(kernel->scheduler->L3queue->IsInList(this)) && (this->getID() > 1))
     // {
-            cout << "In thread.cc line 218\n";
+            // cout << "In thread.cc line 218\n";
             kernel->scheduler->ReadyToRun(this);
     // }
     
-    cout <<  "Find next Thread\n";
+    // cout <<  "Find next Thread\n";
     nextThread = kernel->scheduler->FindNextToRun();
     
 
     if (nextThread != NULL) 
     {
-        if (kernel->currentThread->GetPriority() < 100)
+        if (kernel->currentThread->GetPriority() < 100 && kernel->scheduler->aging == false)
         {
             int exeTime = kernel->currentThread->GetExeTime();
             int burst = kernel->currentThread->GetBurstTime();
@@ -243,7 +244,7 @@ Thread::Yield ()
              << "Tick[" << stats->totalTicks << "]: Thread[" << this->getID()
              << "] is replaced, and it has executed [" << this->GetExeTime() <<"] ticks\n";
         
-        this->SetExeTime(0);
+        this->L3time = 0;
         
 	    kernel->scheduler->Run(nextThread, FALSE);
     }
@@ -286,9 +287,11 @@ Thread::Sleep (bool finishing)
 		kernel->interrupt->Idle();	// no one to run, wait for an interrupt
 	}    
     // returns when it's time for us to run
-	cout << "Thread " << this->getID() << " Sleep\n";
+	// cout << "Thread " << this->getID() << " Sleep\n";
     int prev_burstTime = this->GetBurstTime();
     Statistics *stats = kernel->stats;
+    cout << "Tick[" << kernel->stats->totalTicks << "]: Thread[" << kernel->currentThread->getID() 
+         << "] has changed its burstTime to " << 0.5*prev_burstTime + 0.5*this->GetExeTime() << " Ticks\n";
     this->SetBurstTime(0.5*prev_burstTime + 0.5*this->GetExeTime());    // burstTime setup
 
 
@@ -299,6 +302,7 @@ Thread::Sleep (bool finishing)
          << "] is replaced and it has executed [" << this->GetExeTime() << "] ticks\n";
 
     this->SetExeTime(0);
+    this->L3time = 0;
     kernel->scheduler->Run(nextThread, finishing); 
 }
 

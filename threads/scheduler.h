@@ -42,6 +42,7 @@ class Scheduler {
     SortedList<Thread *> *L1queue;
     SortedList<Thread *> *L2queue;
     List<Thread *> *L3queue;      
+    bool aging;
   private:
     List<Thread *> *readyList;  // queue of threads that are ready to run,
 				// but not running

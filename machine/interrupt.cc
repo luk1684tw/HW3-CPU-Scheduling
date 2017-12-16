@@ -169,23 +169,31 @@ Interrupt::OneTick()
 
     Scheduler *schedule  = kernel->scheduler;              
     schedule->IncreaseWaitTime();
-    cout << "Current running Thread:" << kernel->currentThread->getID()
-         << " , Thread Priority: " << kernel->currentThread->GetPriority()
-         << " Thread burstTime: " << kernel->currentThread->GetBurstTime() 
-         << " Total ticks: " << kernel->stats->totalTicks
-         << " Exetime: " << kernel->currentThread->GetExeTime() << endl;
-    kernel->currentThread->SetExeTime(kernel->currentThread->GetExeTime()+1);               
+    // cout << "Current running Thread:" << kernel->currentThread->getID()
+    //      << " , Thread Priority: " << kernel->currentThread->GetPriority()
+    //      << " Thread burstTime: " << kernel->currentThread->GetBurstTime() 
+    //      << " Total ticks: " << kernel->stats->totalTicks
+    //      << " Exetime: " << kernel->currentThread->GetExeTime()
+    //      << " L3time: " << kernel->currentThread->L3time << endl;
+    kernel->currentThread->SetExeTime(kernel->currentThread->GetExeTime()+1);
+    kernel->currentThread->L3time++;               
 
     
     
     ChangeLevel(IntOff, IntOn);	// re-enable interrupts
     if (yieldOnReturn) {	// if the timer device handler asked 
     				// for a context switch, ok to do it now
-	yieldOnReturn = FALSE;
- 	status = SystemMode;		// yield is a kernel routine
-	kernel->currentThread->Yield();
-	status = oldStatus;
+	    yieldOnReturn = FALSE;
+ 	    status = SystemMode;		// yield is a kernel routine
+	    kernel->currentThread->Yield();
+	    status = oldStatus;
+    } 
+    else 
+    {
+        // cout << "set aging to false\n";
+        kernel->scheduler->aging = false;
     }
+    
 }
 
 //----------------------------------------------------------------------
