@@ -204,7 +204,7 @@ Thread::Finish ()
 void
 Thread::Yield ()
 {
-    // cout << "Thread " << this->getID() << " yield\n";
+    cout << "Thread " << this->getID() << " yield\n";
     Thread *nextThread;
     Statistics *stats = kernel->stats;
     IntStatus oldLevel = kernel->interrupt->SetLevel(IntOff);
@@ -227,16 +227,16 @@ Thread::Yield ()
 
     if (nextThread != NULL) 
     {
-        if (kernel->currentThread->GetPriority() < 100 && kernel->scheduler->aging == false)
-        {
-            int exeTime = kernel->currentThread->GetExeTime();
-            int burst = kernel->currentThread->GetBurstTime();
-            int estimate = 0.5*exeTime + 0.5*burst;
-            kernel->currentThread->SetBurstTime(estimate);
+        // if (kernel->currentThread->GetPriority() < 100 && kernel->scheduler->aging == false)
+        // {
+        //     int exeTime = kernel->currentThread->GetExeTime();
+        //     int burst = kernel->currentThread->GetBurstTime();
+        //     int estimate = 0.5*exeTime + 0.5*burst;
+        //     kernel->currentThread->SetBurstTime(estimate);
 
-            cout << "Tick[" << kernel->stats->totalTicks << "]: Thread[" << kernel->currentThread->getID() 
-                 << "] has changed its burstTime to " << estimate << " Ticks\n";
-        }
+        //     cout << "Tick[" << kernel->stats->totalTicks << "]: Thread[" << kernel->currentThread->getID() 
+        //          << "] has changed its burstTime to " << estimate << " Ticks\n";
+        // }
         
 		
         cout << "Tick[" << stats->totalTicks << "]: Thread[" << nextThread->getID() 
@@ -282,7 +282,7 @@ Thread::Sleep (bool finishing)
     DEBUG(dbgThread, "Sleeping thread: " << name);
 
     status = BLOCKED;
-	//cout << "debug Thread::Sleep " << name << "wait for Idle\n";
+	cout << "debug Thread::Sleep " << name << "wait for Idle\n";
     while ((nextThread = kernel->scheduler->FindNextToRun()) == NULL) {
 		kernel->interrupt->Idle();	// no one to run, wait for an interrupt
 	}    

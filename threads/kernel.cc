@@ -271,7 +271,6 @@ void ForkExecute(Thread *t)
 
 void Kernel::ExecAll()
 {
-
 	for (int i=1;i<=execfileNum;i++) {
 		int a = Exec(execfile[i], ThreadPriority[i]);
 	}
